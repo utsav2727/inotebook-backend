@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'Utsavsecret';
-const fetchuser = (req, res, next) => {
+const fetchuser = async (req, res, next) => {
     //Get the tokenId and return user id 
-    const tokenid = req.header('auth-token');
+    const tokenid = await req.header('auth-token');
     if (!tokenid) {
-        res.status(401).send('Please authenticate using valid token');
+        return res.status(401).send('Please authenticate using valid token');
     }
     try {
         //verify and send to the next
@@ -12,7 +12,7 @@ const fetchuser = (req, res, next) => {
         req.user = decoded.user
         next()
     } catch (error) {
-        res.status(401).send('Please authenticate using valid token');
+        return res.status(401).send('Please authenticate using valid token');
     }
 
 }

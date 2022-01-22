@@ -1,0 +1,7 @@
+http://localhost:5000/api/v1/auth/create
+http://localhost:5000/api/v1/auth/login
+http://localhost:5000/api/v1/auth/getloggeduser
+http://localhost:5000/api/v1/notes/fetchallnotes
+http://localhost:5000/api/v1/notes/addnote
+http://localhost:5000/api/v1/notes/updatenote/61ebbbc09a150e84e3cfc61a
+http://localhost:5000/api/v1/notes/deletenote/61ebbbc09a150e84e3cfc61a

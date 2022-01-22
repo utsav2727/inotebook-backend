@@ -6,9 +6,14 @@ const { body, validationResult } = require('express-validator');
 
 //ROUTE1 :  FETCH ALL NOTES using GET "/api/v1/notes/fetchallnotes"
 router.get('/fetchallnotes', fetchuser, async (req, res) => {
-    const userid = req.user
-    const notes = await Notes.find({ user: userid });
-    res.json(notes)
+    try {
+        const userid = req.user;
+        const notes = await Notes.find({ user: userid });
+        res.json(notes)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Internal Server Error!");
+    }
 });
 
 //ROUTE2 :  Add Notes using POST "/api/v1/notes/addnote"
@@ -36,6 +41,50 @@ router.post('/addnote',
         }
     });
 
+//ROUTE3 :  Update Notes using POST "/api/v1/notes/updatenote"
+router.put('/updatenote/:id', fetchuser, async (req, res) => {
+    try {
+        const { title, description, tag } = req.body
+        let newNote = {};
+        if (title) { newNote.title = title };
+        if (description) { newNote.description = description };
+        if (tag) { newNote.tag = tag };
 
+        //find by ID and update.
+        const userid = req.user;
+        let note = await Notes.findById(req.params.id);
+        if (!note) {
+            return res.status(404).send('File not found!');
+        };
+        if (note.user != userid) {
+            return res.status(401).send('Not able to update Notes!');
+        }
+        note = await Notes.findOneAndUpdate(req.params.id, { $set: newNote }, { new: true });
+        return res.json(note)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Internal Server Error!");
+    }
+});
+
+//ROUTE4 :  Delete Notes using POST "/api/v1/notes/deletenote"
+router.delete('/deletenote/:id', fetchuser, async (req, res) => {
+    try {
+        //find by ID and delete.
+        const userid = req.user;
+        let note = await Notes.findById(req.params.id);
+        if (!note) {
+            return res.status(404).send('File not found!');
+        };
+        if (note.user != userid) {
+            return res.status(401).send('Not able to update Notes!');
+        }
+        note = await Notes.findByIdAndDelete(req.params.id);
+        return res.send(`Note has been deleted with ${note.id}`)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send("Internal Server Error!");
+    }
+});
 
 module.exports = router
